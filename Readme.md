@@ -66,3 +66,39 @@ Ver objetos
 ```
 awslocal dynamodb scan --table-name Music
 ```
+
+# SNS + SQS
+
+Neste exemplo enviarei uma message para o SNS que ira reenviar para o SQS
+
+```
+awslocal sqs create-queue --queue-name fofoqueira-1
+awslocal sqs create-queue --queue-name fofoqueira-2
+awslocal sqs create-queue --queue-name fofoqueira-3
+```
+
+Criar Topico
+
+```
+awslocal sns create-topic --name fofoca-boca
+```
+
+Assinar ao topico Uma fofoqueiras
+
+```
+awslocal sns subscribe --topic-arn=arn:aws:sns:us-east-1:000000000000:fofoca-boca --protocol=sqs --notification-endpoint=http://localhost:4566/000000000000/fofoqueira-1
+```
+
+Enviar mensagem para o topico
+
+```
+awslocal sns publish --topic-arn arn:aws:sns:us-east-1:000000000000:fofoca-boca --message "Palmeiras nao tem mundial"
+```
+
+Ler mensagem de fofoca
+
+```
+awslocal sqs receive-message --queue-url http://localhost:4566/000000000000/fofoqueira-1
+```
+
+Somente a fofoqueira 1 tera a mensagem na fila, as outras nao, pois nao estao assinando o topico.

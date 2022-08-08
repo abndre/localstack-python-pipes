@@ -1,10 +1,10 @@
 #import boto3
 import localstack_client.session as boto3
-
+import json
 # Create SQS client
 sqs = boto3.client('sqs')
 
-queue_url = 'http://localhost:4566/000000000000/sample-queue'
+queue_url = 'http://localhost:4566/000000000000/fofoqueira-1'
 
 # Receive message from SQS queue
 response = sqs.receive_message(
@@ -23,7 +23,7 @@ response = sqs.receive_message(
 message = response['Messages'][0]
 receipt_handle = message['ReceiptHandle']
 
-delete = True
+delete = False
 
 if delete:
     # Delete received message from queue
@@ -34,7 +34,9 @@ if delete:
     print('Received and deleted message: %s' % message)
 
 else:
-    print('Received: %s' % message)
+    # print('Received: %s' % message)
+    contend_msg = json.loads(message['Body'])['Message']
+    print(contend_msg)
 
 if __name__ == '__main__':
     print("END")
